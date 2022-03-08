@@ -39,9 +39,11 @@ var sdk = require("matrix-bot-sdk");
 var MatrixClient = sdk.MatrixClient;
 var SimpleFsStorageProvider = sdk.SimpleFsStorageProvider;
 var AutojoinRoomsMixin = sdk.AutojoinRoomsMixin;
-var homeserverUrl = "https://matrix.midhun.dev"; // make sure to update this with your url
-var accessToken = "syt_Ym90dXNlcg_wnIPgtCkJlPrsiMHwhys_2RKVYQ";
-var storage = new SimpleFsStorageProvider("bot.json");
+var homeserverUrl = process.env.HOMESERVER_URL; // make sure to update this with your url
+var accessToken = process.env.ACCESS_TOKEN;
+var userId = process.env.USER_ID;
+var botJsonPath = process.env.BOT_JSON_PATH || "bot.json";
+var storage = new SimpleFsStorageProvider(botJsonPath);
 var client = new MatrixClient(homeserverUrl, accessToken, storage);
 AutojoinRoomsMixin.setupOnClient(client);
 client.start().then(function () { return console.log("Client started!"); });
@@ -53,10 +55,10 @@ client.on("room.message", function (roomId, event) { return __awaiter(_this, voi
                 if (!event["content"])
                     return [2 /*return*/];
                 sender = event["sender"];
-                if (sender === "@botuser:matrix.midhun.dev")
+                if (sender === userId)
                     return [2 /*return*/];
                 body = event["content"]["body"];
-                console.log("".concat(roomId, ": ").concat(sender, " says '").concat(body));
+                console.log(roomId + ": " + sender + " says '" + body);
                 return [4 /*yield*/, client.sendMessage(roomId, { msgtype: "m.notice", body: "Hello 👋" })];
             case 1:
                 _a.sent();
